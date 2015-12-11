@@ -1,6 +1,3 @@
-##TESTED ON MYSQL 2 - REQUIRES THESE MODULES: mechanize,  bs4, and MySQLdb modules.
-
-
 ##SETTINGS##
 freq=60 # how often to check in seconds; will automatically sleep for 5 seconds after checking each post to avoid being blocked by PHPBB
 cron=True # if making cronjob, set this to True; will only loop once, and freq will be ignored
@@ -8,39 +5,30 @@ username='LawSchoolBot' # TLS USERNAME FOR BOT
 password='DQVCPZMmMJ2DnjV5EWx5tk7K' #TLS PASSWORD FOR BOT
 forums_to_check=['9'] # FORUMS TO CHECK - 9 = my chances (f=? in url of each forum)
 dir='/home/rob/tls bot/' # FULL DIRECTORY THAT BOT IS IN
-
+mysql_host='localhost'
+mysql_user='mylsnbot'
+mysql_password='wfWAqvrbDUnhCDtG3mAPDJ44'
+mysql_db='apps'
 urms={'URM, Exclude AA':['MA','Mexican','Latino','PR','latina','puerto','rican','native'],'AA Only':['aa','african','afam'],'Only':[],'Include':[]} #URM recognition values
-
-#MYSQL INFORMATION IS TO COORDINATE WITH MYLSN GRAPHS. CAN REMOVE MYSQL INFORMATION BY LEAVING THE VARIABLES BELOW UNCHANGED
-
-mysql_host=''
-mysql_user=''
-mysql_password=''
-mysql_db=''
-
 
 ##DO NOT EDIT BELOW THIS LINE UNLESS YOU KNOW WHAT YOU ARE DOING##
 
 import mechanize,  time, cookielib, datetime, re, MySQLdb, random, string, json
 from bs4 import BeautifulSoup
-if mysql_host != '':
-	db=MySQLdb.connect(host=mysql_host,user=mysql_user,passwd=mysql_password,db=mysql_db)
-	db.autocommit(True) # Rather than reconnecting on each loop
-	cur=db.cursor()
+db=MySQLdb.connect(host=mysql_host,user=mysql_user,passwd=mysql_password,db=mysql_db)
+db.autocommit(True) # Rather than reconnecting on each loop
+cur=db.cursor()
 
 def getImageLink(lsat,gpa,urm):
-	global mysql_host
-	if mysql_host != '':
-		cont=False
-		while not cont:
-			random_string=''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
-			cur.execute("""select %s from %s where %s="%s" limit 1;""" % ('searchkey','saved_searches','searchkey',random_string))
-			a=cur.fetchall()
-			if len(a) == 0: cont=True
-		search_params={"formsubmitted":"1","searchtype":"automatic","lsat":str(lsat),"gpa":str(gpa),"urm":urm,"ed":"Exclude","submitted1":"Show all","submitted2":"Show all","automatic":"yes","botpost":True}
-		cur.execute("""INSERT INTO  %s (`%s` ,`%s`,`%s`)VALUES ("%s",  "%s",  "%s");""" % ('saved_searches', 'searchkey','newvars','results',random_string,MySQLdb.escape_string(json.dumps(search_params)),''))	
-		return random_string
-	else: return ''
+	cont=False
+	while not cont:
+		random_string=''.join(random.choice(string.ascii_lowercase + string.digits) for _ in range(8))
+		cur.execute("""select %s from %s where %s="%s" limit 1;""" % ('searchkey','saved_searches','searchkey',random_string))
+		a=cur.fetchall()
+		if len(a) == 0: cont=True
+	search_params={"formsubmitted":"1","searchtype":"automatic","lsat":str(lsat),"gpa":str(gpa),"urm":urm,"ed":"Exclude","submitted1":"Show all","submitted2":"Show all","automatic":"yes","botpost":True}
+	cur.execute("""INSERT INTO  %s (`%s` ,`%s`,`%s`)VALUES ("%s",  "%s",  "%s");""" % ('saved_searches', 'searchkey','newvars','results',random_string,MySQLdb.escape_string(json.dumps(search_params)),''))	
+	return random_string
 
 br = mechanize.Browser()
 cj = cookielib.LWPCookieJar()
