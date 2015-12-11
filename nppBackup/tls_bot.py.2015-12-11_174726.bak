@@ -5,7 +5,7 @@
 freq=60 # how often to check in seconds; will automatically sleep for 5 seconds after checking each post to avoid being blocked by PHPBB
 cron=True # if making cronjob, set this to True; will only loop once, and freq will be ignored
 username='LawSchoolBot' # TLS USERNAME FOR BOT
-password='' #TLS PASSWORD FOR BOT
+password='DQVCPZMmMJ2DnjV5EWx5tk7K' #TLS PASSWORD FOR BOT
 forums_to_check=['9'] # FORUMS TO CHECK - 9 = my chances (f=? in url of each forum)
 dir='/home/rob/tls bot/' # FULL DIRECTORY THAT BOT IS IN
 
